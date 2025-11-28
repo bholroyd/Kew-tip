@@ -222,7 +222,7 @@ const layoutarray = [
 [['library.artist' ,'  └─ ♫ Jenova 7  ']],
 [['library.artist',  '  Artist: Jenova 7']],
 [['library.enqueued','  * Album: Lost Sci-Fi Movie Themes']], //enqueued??
-[['library.playing', ' ▶ * └─ Dreaming Of Mars']],
+[['library.playing', ' ▶ * └─ Dreaming Of Mars', 'tool tip test']],
 [['library.enqueued','   * └─ Deep Star Deception']],
 [['library.enqueued', '   * └─ Cyrogenic Dream']],
 [['library.enqueued','   * └─ Super Ultra Spaceman Theme']],
@@ -267,6 +267,8 @@ const layoutarray = [
                 //grid.innerHTML = label;
             } else {
                 label.setAttribute('for', `colour-preview${indexarray.indexOf(elem[0])}`); // Set for attribute
+                
+                label.setAttribute('title', `${elem[0]}`); // Set for attribute
                 label.classList.add('colour-preview');
                 grid.appendChild(label);
                 //grid.innerHTML = label;
