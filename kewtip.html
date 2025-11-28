@@ -1,0 +1,373 @@
+<!--
+   kew-tip
+   
+   Intended to generate theme files for Kew
+   (https://github.com/ravachol/kew)
+   
+   Copyright 2025 Ben Holroyd <bcompactest+kewpid@gmail.com>
+   
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+   MA 02110-1301, USA.
+   
+   
+   
+   
+-->
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>KEW-tip</title>
+    <style>
+        body {
+            font-family: monospace;//sans-serif;
+            background-color: #f4f4f4; /*#f0f0f0; /* Default light background */
+        }
+
+        .terminal {
+            background-color: black; /* Default terminal background */
+            color: white; /* Default terminal text colour */
+            border: 1px solid;
+            border-radius: 10px;
+            width: 33.1%; /* Width for each terminal */
+            float: left; /* Align terminal sections next to each other */
+        }
+
+        .dark-theme {
+            background-color: black;
+            color: white;
+        }
+
+        .light-theme {
+            background-color: white;
+            color: black;
+        }
+
+        .report {               /*the generated onscreen config*/
+            clear: both; 
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        input[type="color" i] { /*don't want the colour picker widget*/
+            inline-size: 0px;
+            block-size: 0px;
+            padding: 0px;
+            border-width: 0px;
+        }
+
+    </style>
+</head>
+<body>
+<h2 style="color:#de2b4d;">
+<pre>
+  __
+ |  |--.-----.--.--.--. <font style="color:#2BDEBD;font-style:italic;">- TiP</font>
+ |    <|  -__|  |  |  | <font style="color:#2BDEBD;font-style:italic;">  Theming        </font> <button id="toggleTheme">Switch to Light Theme</button>
+ |__|__|_____|________| <font style="color:#2BDEBD;font-style:italic;">  is             </font> <button id="generateReport">Generate Config</button> <font style="color:black;font-size: medium" id="postreporttext1">Theme can be downloaded, or copied from below ↓</font>
+  MUSIC FOR THE SHELL   <font style="color:#2BDEBD;font-style:italic;">  Possible</font>        <!--<font style="color:black;font-size: medium" id="postreporttext2">Save document to  ~/.config/kew/themes/ and update name in the file to something meaningful</font>-->
+</pre>
+</h2>
+
+
+<div id="terminalsContainer" class="wrap-grid">
+    <div class="terminal" id="terminal1"></div>
+    <div class="terminal" id="terminal2"></div>
+    <div class="terminal" id="terminal3"></div>
+</div>
+    
+<pre>    
+    <div class="report" id="download"></div>
+    <div class="report" id="colourReport"></div>
+</pre>
+<script>
+
+// indexarray holds list of option names
+// selectedcolours holds the colours accociated with each option.
+
+let indexarray = [
+'accent', //unused?
+'text', //only for f6 help screen
+'textDim', //unused?
+'textMuted',
+'logo',
+'header',
+'footer', //shortcut bar at bottom
+'help',  //help at top of screen
+'link', //unused?
+'nowplaying',
+'playlist.rownum',
+'playlist.title',
+'playlist.playing',
+'trackview.title',
+'trackview.artist',
+'trackview.album',
+'trackview.year',
+'trackview.time',
+'trackview.visualizer',
+'trackview.lyrics',
+'library.artist', //also playlist and title, and search artist
+'library.album', //apparently unused
+'library.track', //not used in ansi 16 colour mode?!?
+'library.enqueued',
+'library.playing',
+'search.label',
+'search.query',
+'search.result',
+'search.enqueued',
+'search.playing',
+'progress.filled',
+'progress.empty',
+'progress.elapsed',
+'status.info', //unused
+'status.warning', //unused
+'status.error', //unused
+'status.success']; //unused
+
+const layoutarray = [   
+[[ 'logo','  __                    ']],
+[[ 'logo',' |  |--.-----.--.--.--. ']],
+[[ 'logo',' |    <|  -__|  |  |  | ']],
+[[ 'logo',' |__|__|_____|________| '], ['nowplaying', '▶ Track: Dreaming of Mars']],
+[[ 'logo','                         ']],
+[['help','  Select:↑/↓ or k/j. Accept:Enter. Clear:Backspace.']],
+[['help','  Scroll:PgUp/PgDn. Remove:Del. Move songs:f/g.']],
+[['VOID',' ']],
+[['header','  ─ PLAYLIST ─']],
+[['playlist.rownum','  1. '],['playlist.playing','Now Playing: Dreaming Of Mars']],
+[['playlist.rownum','  2. '],['playlist.title','Deep Star Deception']],
+[['playlist.rownum','  3. '],['playlist.title','Cyrogenic Dream']],
+[['playlist.rownum','  4. '],['playlist.title','Super Ultra Spaceman Theme']],
+[['VOID',' ']],
+[['footer','[F2 Playlist|F3 Library|F4 Track|F5 Search|F6 Help]']],
+[['VOID',  ' --------------------------------------------------']],
+
+
+[['VOID',' ']], 
+[['trackview.title', '  Track: Dreaming of Mars']],
+[['trackview.artist','  Artist: Jenova 7']],
+[['trackview.album', '  Album: Lost Sci-Fi Movie Themes']],
+[['trackview.year',  '  2024']],
+[['trackview.time',  '  0:42 / 2:00 (35%) Vol:100% 44.1khz 883kbps']],
+[['trackview.visualizer','  ']],
+[['trackview.visualizer','  ']],
+[['trackview.visualizer','  ']],
+[['trackview.visualizer','  ██ ██ ██']],
+[['trackview.visualizer','  ██ ██ ██ ██ ██']],
+[['trackview.visualizer','  ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██']],
+[['progress.filled','  ━━━━━━━━━━━━'],['progress.elapsed',' ▆ '],['progress.empty','━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━']],   
+[['VOID',' ']],
+[['footer','[F2 Playlist|F3 Library|F4 Track|F5 Search|F6 Help]']],
+
+
+[[ 'logo','  __                    ']],
+[[ 'logo',' |  |--.-----.--.--.--. ']],
+[[ 'logo',' |    <|  -__|  |  |  | ']],
+[[ 'logo',' |__|__|_____|________| '], ['nowplaying', '▶ Track: Dreaming of Mars']],
+[[ 'logo','                         ']],
+[[ 'help','  Select:↑/↓. Enqueue/Dequeue:Enter. Play:Alt+Ent.']],
+[[ 'VOID','']],
+[['search.label','  Search: '], ['search.query', 'Drea '] ],
+[['search.label','']],
+[['search.playing', '  * 01 Dreaming of Mars.flac [Lost Sci-Fi Movi..]']],
+[['search.enqueued','  * 03 Cyrogenic Dream.flac [Lost Sci-Fi Movi..]']],
+[['library.artist',  '  TANGERINE DREAM']],     
+[['search.result',  '  10-Neon Meate Dream of a Octafish.mp3 [Trou..]']],
+//[['search.result',  '  03-I Can Dream.ogg  [Paranoid And Sunburnt]']],
+//[['search.result',  '  [New Gold Dream (81/82/83/84)]']],
+[['VOID',' ']],
+[['footer','[F2 Playlist|F3 Library|F4 Track|F5 Search|F6 Help]']],
+[['VOID',  ' --------------------------------------------------']],
+
+
+[[ 'logo','  __                    ']],
+[[ 'logo',' |  |--.-----.--.--.--. ']],
+[[ 'logo',' |    <|  -__|  |  |  | ']],
+[[ 'logo',' |__|__|_____|________| '], ['nowplaying', '▶ Track: Dreaming of Mars']],
+[[ 'logo','                         ']],
+[[ 'text','  kew version: '],['help', '3.7.0 ']],
+[[ 'VOID',' ']],
+[[ 'text','  Theme: '],['help', 'KEW-tip']],
+[[ 'VOID',' ']],
+[[ 'text','  · Play/Pause: Space, mouseRight, p']],
+[[ 'text','  · Enqueue/Dequeue: Enter, Shft+g, mouseMiddle, G']],
+[[ 'text','  · Enqueue and Play: Alt+Enter']],
+[[ 'text','  · Quit: Esc, q']],
+[[ 'text','  · Switch tracks: Left, h and Right, l']],
+//[[ 'text','  · Volume: Alt+mouseWheelUp, +, = and Alt+mouseWheelDown, -']],
+[['VOID',' ']],
+[['footer','[F2 Playlist|F3 Library|F4 Track|F5 Search|F6 Help]']],
+
+
+[[ 'logo','  __                    ']],
+[[ 'logo',' |  |--.-----.--.--.--. ']],
+[[ 'logo',' |    <|  -__|  |  |  | ']],
+[[ 'logo',' |__|__|_____|________| '], ['nowplaying', '▶ Track: Dreaming of Mars']],
+[[ 'logo','                         ']],
+[[ 'help','  Select:↑/↓. Enqueue/Dequeue:Enter. Play:Alt+Ent.']],
+[[ 'help','  Scroll:PgUp/PgDn. Update:u. Sort:o']],
+[['VOID',' ']],
+[['library.artist' ,'  ─ MUSIC LIBRARY ─']],
+[['library.artist' ,'  └─ ♫ Jenova 7  ']],
+[['library.artist',  '  Artist: Jenova 7']],
+[['library.enqueued','  * Album: Lost Sci-Fi Movie Themes']], //enqueued??
+[['library.playing', '   * └─ Dreaming Of Mars']],
+[['library.enqueued','   * └─ Deep Star Deception']],
+[['library.enqueued', '   * └─ Cyrogenic Dream']],
+[['library.enqueued','   * └─ Super Ultra Spaceman Theme']],
+[['library.track',   '  Album: The Sounds Of Sector 7']],
+[['library.track',   '     └─ Ocean Of Sand']],
+[['library.track',   '     └─ Journey The Sunlit Earth']],
+[['library.track',   '     └─ Trainspotting']],
+//[['library.track',   '     └─ Magicka']],
+[['VOID',' ']],
+[['footer','[F2 Playlist|F3 Library|F4 Track|F5 Search|F6 Help]']],
+[['VOID',  ' --------------------------------------------------']],
+
+[['nowplaying', '  ▶ Track: Dreaming of Mars']],
+[['VOID', ' ']],
+[['trackview.lyrics','  Kew is the best']],
+[['trackview.lyrics','  I have a vest']],
+[['trackview.lyrics','  and the rest']],
+[['trackview.lyrics','  at the behest']],
+[['trackview.lyrics','  lest guests, imbue']],
+[['trackview.lyrics','  with hues, due.']],
+];   
+    const terminal1 = document.getElementById('terminal1');
+    const terminal2 = document.getElementById('terminal2');
+    const terminal3 = document.getElementById('terminal3');
+    const colourReportDiv = document.getElementById('colourReport');
+    const generateReportButton = document.getElementById('generateReport');
+    const toggleThemeButton = document.getElementById('toggleTheme');
+    let selectedcolours = new Array(indexarray.length).fill('#ffffff');
+    let isDarkTheme = true;    
+    
+    for(const line of layoutarray){
+        const grid = document.createElement('div');
+        grid.classList.add('grid'); 
+       
+        for(const elem of line){
+
+            const label = document.createElement('label');
+            label.style.whiteSpace = 'pre-wrap';
+            label.textContent = `${elem[1]}`;
+            if ( elem[0] == 'VOID') { //elements we don't want a colour picker attached to.
+                grid.appendChild(label);
+                //grid.innerHTML = label;
+            } else {
+                label.setAttribute('for', `colour-preview${indexarray.indexOf(elem[0])}`); // Set for attribute
+                label.classList.add('colour-preview');
+                grid.appendChild(label);
+                //grid.innerHTML = label;
+               
+                const colourInput = document.createElement('input');
+                colourInput.type = 'color';
+                colourInput.id=`colour-preview${indexarray.indexOf(elem[0])}`;
+            
+                colourInput.addEventListener('input', () => {
+                    // Update all labels with the same 'for' attribute
+                    const labels = document.querySelectorAll(`label[for='colour-preview${indexarray.indexOf(elem[0])}']`);
+                    labels.forEach(label => {
+                        label.style.color = colourInput.value; 
+                        selectedcolours[indexarray.indexOf(elem[0])] = colourInput.value;
+                    });
+                });
+            
+                grid.appendChild(colourInput);
+                //grid.innerHTML = colourInput;
+
+            }
+
+            // Append to appropriate terminal
+            if (layoutarray.indexOf(line) < 31) {
+                terminal1.appendChild(grid);
+                //grid.innerHTML = terminal1;
+            } else if (layoutarray.indexOf(line) < 63) {
+                 terminal2.appendChild(grid);
+            } else {
+                terminal3.appendChild(grid);
+            }
+        }
+    }
+      
+    toggleThemeButton.addEventListener('click', () => {
+        isDarkTheme = !isDarkTheme;
+        terminal1.className = isDarkTheme ? 'terminal dark-theme' : 'terminal light-theme';
+        terminal2.className = isDarkTheme ? 'terminal dark-theme' : 'terminal light-theme';
+        terminal3.className = isDarkTheme ? 'terminal dark-theme' : 'terminal light-theme';
+        toggleThemeButton.textContent = isDarkTheme ? 'Switch to Light Theme' : 'Switch to Dark Theme';
+
+        // assume pure black or white text should have their colour inverted
+        for( let i = 0; i < selectedcolours.length; i++) {
+            if ( selectedcolours[i] == '#000000') {
+                selectedcolours[i] = '#ffffff';
+            } else if ( selectedcolours[i] == '#ffffff' ) {
+                    selectedcolours[i] = '#000000';
+            }
+        }
+    });
+    
+    
+    //generate the config file
+    generateReportButton.addEventListener('click', () => {
+        //document.getElementById('postreporttext1').textContent = "Theme can be downloaded, or copied from below ↓";
+        //document.getElementById('postreporttext2').textContent = "Save document to  ~/.config/kew/themes/ and update name in the file to something meaningful";        
+        generateReportButton.textContent = 'Update Config   ';
+
+
+
+        let filename = `KEW-tip-${Date.now()}`;
+        let configoutp = `# Theme created by Kew-tip theme creator 
+# please save in to \${XDG_CONFIG_HOME}/kew/themes/ (typically ~/.config/kew/themes)
+# The name and author below will be displayed in kew
+#
+ 
+name=${filename}
+author=Me
+
+`;
+        indexarray.forEach((opt,i) => {
+            configoutp += `${opt}=${selectedcolours[i]}\n`;
+        });
+        colourReportDiv.textContent = configoutp;
+        
+        //const aa = document.createElement('div');
+        //aa.classList.add('aa');        
+        
+        const downl = document.getElementById('download');
+        const blob = new Blob([configoutp], { type: 'text' });
+        const url = window.URL.createObjectURL(blob);
+
+        //const a = document.createElement('a');
+        //a.style.display = 'none';
+        //a.href = url;
+        // a.textContent = "testytest";
+        //a.download = 'pleasename.theme'; // Set the desired file name
+        //document.appendChild(a);
+        //a.click();
+        //window.URL.revokeObjectURL(url);
+        //document.body.removeChild(a);     
+        //<button id="generateReport">Generate Report</button>        
+        
+        downl.innerHTML = `
+Click the link to download, or copy and paste the below
+save in to \${XDG_CONFIG_HOME}/kew/themes/ (typically ~/.config/kew/themes)
+The name and author options will be displayed in kew.
+        
+        <a href="${url}" download = ${filename}.theme>kew.theme</a>`;
+    });    
+</script>
+
+</body>
+</html>
