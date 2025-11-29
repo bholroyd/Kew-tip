@@ -59,7 +59,11 @@
             margin-top: 20px;
             font-weight: bold;
         }
-
+        
+        #ul { 
+            text-decoration: underline; 
+        }
+        
         input[type="color" i] { /*don't want the colour picker widget*/
             inline-size: 0px;
             block-size: 0px;
@@ -180,7 +184,7 @@ const layoutarray = [
 [[ 'VOID','']],
 [['search.label','  Search: '], ['search.query', 'Drea '] ],
 [['search.label','']],
-[['search.playing', '  * 01 Dreaming of Mars.flac [Lost Sci-Fi Movi..]']],
+[['VOID','  '],['search.playing', '* 01 Dreaming of Mars.flac [Lost Sci-Fi Movi..]']],
 [['search.enqueued','  * 03 Cyrogenic Dream.flac [Lost Sci-Fi Movi..]']],
 [['library.artist',  '  TANGERINE DREAM']],     
 [['search.result',  '  10-Neon Meate Dream of a Octafish.mp3 [Trou..]']],
@@ -222,7 +226,7 @@ const layoutarray = [
 [['library.artist' ,'  └─ ♫ Jenova 7  ']],
 [['library.artist',  '  Artist: Jenova 7']],
 [['library.enqueued','  * Album: Lost Sci-Fi Movie Themes']], //enqueued??
-[['library.playing', ' ▶ * └─ Dreaming Of Mars', 'tool tip test']],
+[['VOID','   '], ['library.playing', '* └─ Dreaming Of Mars', 'tool tip test']],
 [['library.enqueued','   * └─ Deep Star Deception']],
 [['library.enqueued', '   * └─ Cyrogenic Dream']],
 [['library.enqueued','   * └─ Super Ultra Spaceman Theme']],
@@ -262,6 +266,10 @@ const layoutarray = [
             const label = document.createElement('label');
             label.style.whiteSpace = 'pre-wrap';
             label.textContent = `${elem[1]}`;
+            if (elem[0] == 'library.playing' || elem[0] == 'playlist.playing' || elem[0] =='search.playing') {
+                label.setAttribute('id','ul');
+            }
+            
             if ( elem[0] == 'VOID') { //elements we don't want a colour picker attached to.
                 grid.appendChild(label);
                 //grid.innerHTML = label;
